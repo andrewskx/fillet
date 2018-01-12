@@ -6,53 +6,37 @@
 /*   By: anboscan <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/04 15:56:37 by anboscan          #+#    #+#             */
-/*   Updated: 2017/12/08 20:19:32 by anboscan         ###   ########.fr       */
+/*   Updated: 2017/12/07 17:45:48 by anboscan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
+#include <unistd.h>
 #include "fillit.h"
-
-void	ft_free(char **map, t_fillit *data, t_coord x)
-{
-	int i;
-
-	i = 0;
-	while (i < x.y)
-	{
-		if (map[i])
-			free(map[i]);
-		i++;
-	}
-	if (map)
-		free(map);
-	if (data)
-		free(data);
-}
-
+int		back(t_fillit *data, char **map, int current_block, int size_map);
+void	print(t_fillit *data, int num);
 int		ft_num_block(char *str)
 {
-	int		blocks;
-	int		fd;
-	char	symbol;
+	int blocks;
+	int	fd;
+	char symbol;
 
-	blocks = 0;
-	fd = open(str, O_RDONLY);
+	fd = open(str,O_RDONLY);
 	while (read(fd, &symbol, 1) == 1)
 		blocks++;
 	close(fd);
-	blocks = (blocks + 1) / 21;
-	return (blocks);
+	return ((blocks + 1) / 21);
 }
 
-char	**ft_map_malloc(int blocks)
+char **ft_map_malloc(int blocks)
 {
-	char	**ptr;
-	int		i;
-
+	char **ptr;
+	int i;
+	
 	i = 0;
-	ptr = (char**)malloc(sizeof(char*) * (blocks + 1));
-	while (i < blocks + 1)
-		ptr[i++] = (char*)malloc(sizeof(char) * (blocks + 1));
+	ptr = (char**)malloc(sizeof(char*) * blocks);
+	while (i < blocks)
+		ptr[i++] = (char*)malloc(sizeof(char) * blocks);
 	return (ptr);
 }
 
@@ -73,28 +57,43 @@ void	ft_map_set(char **map, int num)
 
 int		main(int arg, char **argv)
 {
+	
 	t_fillit	*data;
 	char		**map;
-	t_coord		x;
 
-	map = 0;
 	data = 0;
-	if (!ft_error(arg))
-		return (0);
-	if ((x.x = ft_num_block(argv[1])) != 0)
-		data = (t_fillit *)malloc(sizeof(t_fillit) * x.x);
-	if ((x.x = ft_open(argv[1], 0, data)))
+	int num;
+	int aux;
+	if (arg != 2)
 	{
-		x.y = ft_size(x.x);
-		map = ft_map_malloc(x.y);
-		ft_map_set(map, x.y + 1);
-		back(data, map, 0, x);
-		if (ft_check_output(map, x.y, &x))
-			back(data, map, 0, x);
+		write(1, "Usage :\n./fillit [file]\n", 25);
+		return (0);
+	}
+	if ((num = ft_num_block(argv[1])) != 0)
+		data = (t_fillit *)malloc(sizeof(t_fillit) * (num + 1));
+		data[num].letter = 7;
+	if ((num = ft_valid_file(argv[1], 0, 0, data)))
+	{
+		printf("\nblocks = %i", num);
+		aux = num;
+		num = ft_size(num);
+		map = ft_map_malloc(num);
+		ft_map_set(map, num);
+		printf("\nmatrix = %i\n", num);
+		print(data, aux);
+//		back(data, map, 0, num);
+		printf("\n\n\n");
+		for (int i = 0; i < num; i++)
+		{
+			for (int j = 0; j < num; j++)
+			{
+				printf("%c", map[i][j]);
+			}
+			printf("\n");
+		}
 	}
 	else
-		write(1, "error\n", 6);
-	ft_print_map(map, x.y);
-	ft_free(map, data, x);
+		printf("\nfail");
+
 	return (0);
 }

@@ -6,7 +6,7 @@
 /*   By: anboscan <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 16:34:43 by anboscan          #+#    #+#             */
-/*   Updated: 2017/12/08 19:56:16 by anboscan         ###   ########.fr       */
+/*   Updated: 2017/12/07 17:41:37 by anboscan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,38 +66,40 @@ int		ft_valid_block(char arr[4][5], int i)
 	return (1 && ft_check_blocks(arr, 0, 0, 0));
 }
 
-int		ft_open(char *str, int fd, t_fillit *data)
-{
-	fd = open(str, O_RDONLY);
-	if (fd == -1)
-		return (0);
-	return (ft_valid_file(0, fd, data));
-}
 
-int		ft_valid_file(int i, int fd, t_fillit *data)
+int		ft_valid_file(char *str, int i, int fd, t_fillit *data)
 {
-	char	arr[4][5];
-	char	symbol;
-	int		blocks;
+	char arr[4][5];
+	char symbol;
+	int j;
+	int blocks;
 
 	blocks = 0;
-	while (++blocks)
+	if ((fd = open(str, O_RDONLY)) != -1)
 	{
-		i = 0;
-		while (i < 4)
-			if (read(fd, arr[i++], 5) != 5)
-				return (0);
-		if (!ft_valid_block(arr, 0))
-			return (0);
-		ft_read(arr, blocks - 1, data);
-		if (read(fd, &symbol, 1))
+		while (1)
 		{
-			if (symbol != '\n')
+			i = 0;
+			while (i < 4)
+				if (read(fd, arr[i++], 5) != 5)
+					return (0);
+			if (!ft_valid_block(arr, 0))
 				return (0);
+			blocks++;
+			ft_read(arr, blocks - 1, data);
+			if (read(fd, &symbol, 1))
+			{
+				if (symbol != '\n')
+					return (0);
+			}
+			else 
+				break ;
 		}
-		else
-			break ;
 	}
 	close(fd);
 	return (blocks);
 }
+
+
+
+

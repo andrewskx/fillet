@@ -6,7 +6,7 @@
 /*   By: anboscan <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/07 17:06:55 by anboscan          #+#    #+#             */
-/*   Updated: 2017/12/08 19:27:57 by anboscan         ###   ########.fr       */
+/*   Updated: 2017/12/07 17:44:27 by anboscan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,33 @@ int		ft_size(int blocks)
 {
 	int i;
 
-	i = 1;
+	i = 0;
 	blocks *= 4;
 	while (i * i < blocks)
 		i++;
 	return (i);
+}
+
+void	print(t_fillit *data, int num)
+{
+	int s;
+	for (int k = 0; k < num; k++)
+	{
+		s = 0;
+	for (int i = 0; i < 4; i++)
+	{
+		for (int j = 0; j < 4; j++)
+		{
+			if (i == data[k].coord[s].x  && j == data[k].coord[s].y)
+			{
+				printf("%c", data[k].letter);
+				s++;
+			}
+			else
+				printf(".");
+		}
+		printf("\n");
+	}
+printf("\n");
+	}
 }

@@ -6,40 +6,36 @@
 /*   By: anboscan <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2017/12/06 18:56:57 by anboscan          #+#    #+#             */
-/*   Updated: 2018/01/06 18:45:56 by anboscan         ###   ########.fr       */
+/*   Updated: 2017/12/07 16:16:49 by anboscan         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
+#include <stdio.h>
 
-void	ft_set_dot(t_fillit *data, char **map, int i, int j)
+void	ft_set_dot(t_fillit *data, char **map)
 {
 	int k;
 
 	k = 0;
-    while (k < 4)
+	while (k < 4)
 	{
-		map[data->coord[k].x + i][data->coord[k].y + j] = '.';
+		map[data->coord[k].x][data->coord[k].y] = '.';
 		k++;
 	}
 }
 
-int		ft_check_space(t_fillit *data, char **map, t_coord xy, int size)
+int		ft_check_space(t_fillit *data, char **map, int i, int j)
 {
-	int i;
-	int j;
+	int size;
 	int k;
 
-	i = xy.x;
-	j = xy.y;
 	k = 0;
+	size = sizeof(map[0]) / sizeof(char) - 1;
 	while (k < 4)
 	{
-		if (((data->coord[k].x + i) >= size) ||
-		map[data->coord[k].x + i][data->coord[k].y + j] != '.'
-		|| ((data->coord[k].y + j) >= size))
+		if (((data->coord[k].x + i) > size) &&  map[data->coord[k].x + i][data->coord[k].y + j] != '.' && ((data->coord[k].y + j) > size))
 			return (0);
-		k++;
 	}
 	return (1);
 }
@@ -56,29 +52,44 @@ void	ft_set_letter(t_fillit *data, char **map, int i, int j)
 	}
 }
 
-int		back(t_fillit *data, char **map, int current_block, t_coord x)
+void	print_matrix(char **map, int size)
 {
-	t_coord xy;
-
-	if (current_block == x.x)
-		return (1);
-	xy.x = 0;
-	while (xy.x < x.y)
+	for (int i = 0; i < size; i++)
 	{
-		xy.y = 0;
-		while (xy.y < x.y)
+		for (int j = 0; j < size; j++)
 		{
-			if (ft_check_space(&data[current_block], map, xy, x.y))
+			printf("%c", map[i][j]);
+		}
+		printf("\n");
+	}
+}
+
+int		back(t_fillit  *data, char **map, int current_block, int size_map)
+{
+	int i;
+	int j;
+
+	printf("here");
+	if (data[current_block].letter == 7)
+		return (1);
+	i = 0;
+	while (i < size_map)
+	{
+		j = 0;
+		while (j < size_map)
+		{
+			if (ft_check_space(&data[current_block], map, i, j))
 			{
-				ft_set_letter(&data[current_block], map, xy.x, xy.y);
-				if (back(data, map, current_block + 1, x))
+				print_matrix(map, size_map);
+				ft_set_letter(&data[current_block], map, i, j);
+				if (back(data, map, current_block + 1, size_map))
 					return (1);
 				else
-					ft_set_dot(&data[current_block], map, xy.x, xy.y);
+					ft_set_dot(&data[current_block], map);
 			}
-			xy.y++;
+			j++;
 		}
-		xy.x++;
+		i++;
 	}
 	return (0);
 }
